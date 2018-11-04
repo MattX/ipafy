@@ -1,3 +1,7 @@
+var $ = require("jquery")
+var browser = require("webextension-polyfill");
+var serialize_map = require("./serialize-map.js");
+
 var transcribing = false;
 var tabToTranscribing = new Map();
 tabToTranscribing.getOrDefault = function(key, def) {
@@ -33,7 +37,10 @@ function getCurrentTabId() {
 function getDict() {
     $.get(browser.runtime.getURL("resources/cmudict"), null, null, "text").then(function (data) {
         dict = parseDict(data.split("\n"));
-    }, function (error) { console.log("error: " + error); });
+    }, function (error) {
+        console.log("Error retrieving dict");
+        console.log(error);
+    });
 }
 
 function wrapIdGetter(f) {
@@ -51,7 +58,8 @@ function sendDict(tabId) {
     if (dict == null) {
         return;
     }
-    browser.tabs.sendMessage(tabId, {action: "send-dict", dict: dict});
+    msg = {action: "send-dict", dict: serialize_map.mapToJson(dict)};
+    browser.tabs.sendMessage(tabId, msg);
 }
 
 function doTranscribe(tabId) {
@@ -90,6 +98,7 @@ function messageDispatcher(message, sender) {
         sendDict();
         break;
     }
+    return false;
 }
 
 function deletedTabListener(tabId) {
@@ -100,4 +109,3 @@ browser.browserAction.onClicked.addListener(sendDict);
 browser.tabs.onRemoved.addListener(deletedTabListener);
 browser.runtime.onMessage.addListener(messageDispatcher);
 getDict();
-

@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
   "name": "IPAfy",
-  "version": "1.1",
+  "version": "1.2",
 
-  "description": "Transcribes English pages to IPA",
+  "description": "Transcribes English web pages into International Phonetic Alphabet (IPA)",
   "icons": {
     "96": "icons/icon-96.png"
   },
@@ -13,13 +13,17 @@
   ],
 
   "background": {
-    "scripts": ["js-lib/jquery-3.2.1.js", "js/background.js"]
+    "scripts": [
+        "js/background.js"
+    ]
   },
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["js-lib/jquery-3.2.1.js", "js/content.js"]
+      "js": [
+          "js/content.js"
+      ]
     }
   ],
 
